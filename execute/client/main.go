@@ -13,7 +13,7 @@ func main() {
 	}
 
 	if os.Args[1] == "pub" {
-		c.Send([]byte("Hello from client"))
+		_ = c.Send([]byte("Hello from client"))
 	} else {
 		c.Start()
 

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net"
 
@@ -25,12 +24,12 @@ func NewHandler(conn net.Conn, channel chan []byte) Handler {
 
 func (h *Handler) Handle() {
 	go h.listenForDataToSend()
-	go h.listenForDataToSend()
+	go h.listenForDataToGet()
 }
 
 func (h *Handler) listenForDataToSend() {
 	for {
-		message := <-h.GetChannel
+		message := <-h.SendChannel
 
 		err := h.Network.Send(message)
 		if err != nil {
@@ -45,14 +44,12 @@ func (h *Handler) listenForDataToGet() {
 	for {
 		data, err := h.Network.Get(buffer)
 
-		fmt.Println("got something")
-
 		if err != nil {
 			log.Println(err)
 
 			continue
 		}
 
-		h.SendChannel <- data
+		h.GetChannel <- data
 	}
 }
