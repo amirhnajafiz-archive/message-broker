@@ -36,6 +36,8 @@ func (h *Handler) listenForDataToSend() {
 		err := h.Network.Send(message)
 		if err != nil {
 			log.Println(err)
+
+			break
 		}
 	}
 }

@@ -17,7 +17,7 @@ func (b *Broker) Start() {
 	for {
 		data := <-b.MainChannel
 
-		go b.SendData(data)
+		b.SendData(data)
 	}
 }
 
