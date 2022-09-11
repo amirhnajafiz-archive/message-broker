@@ -26,6 +26,18 @@ func NewClient(address string) (*Client, error) {
 }
 
 func (c *Client) Start() {
+	go c.listenForGetData()
+}
+
+func (c *Client) Send(data []byte) error {
+	if err := c.Network.Send(data); err != nil {
+		return fmt.Errorf("failed to send data: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Client) listenForGetData() {
 	var buffer = make([]byte, 2048)
 
 	for {
