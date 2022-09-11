@@ -12,6 +12,8 @@ import (
 type Client struct {
 	logger *zap.Logger
 
+	enabled bool
+
 	network network.Network
 
 	handler func([]byte)
@@ -33,6 +35,7 @@ func NewClient(address string, handler func([]byte)) (*Client, error) {
 	c.network = network.NewNetwork(conn)
 	c.handler = handler
 	c.logger = logInstance
+	c.enabled = true
 
 	return &c, nil
 }
@@ -49,6 +52,14 @@ func (c *Client) Send(data []byte) error {
 	return nil
 }
 
+func (c *Client) Enable() {
+	c.enabled = true
+}
+
+func (c *Client) Disable() {
+	c.enabled = false
+}
+
 func (c *Client) listenForDataToGet() {
 	var buffer = make([]byte, 2048)
 
@@ -58,6 +69,8 @@ func (c *Client) listenForDataToGet() {
 			c.logger.Error("failed to read", zap.Error(err))
 		}
 
-		c.handler(data)
+		if c.enabled {
+			c.handler(data)
+		}
 	}
 }
