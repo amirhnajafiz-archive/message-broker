@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -43,6 +44,9 @@ func (h *Handler) listenForDataToGet() {
 
 	for {
 		data, err := h.Network.Get(buffer)
+
+		fmt.Println("got something")
+
 		if err != nil {
 			log.Println(err)
 

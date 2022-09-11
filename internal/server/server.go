@@ -34,6 +34,6 @@ func Start(address string) error {
 
 		brokerService.AddWorker(&h)
 
-		go h.Handle()
+		h.Handle()
 	}
 }
