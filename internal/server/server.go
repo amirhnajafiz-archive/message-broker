@@ -25,8 +25,6 @@ func Start(address string) error {
 			return fmt.Errorf("failed to accept client: %w", err)
 		}
 
-		fmt.Println("accept client")
-
 		h := handler.NewHandler(conn, brokerService.MainChannel, brokerService.TerminateChannel)
 		h.Id = id
 

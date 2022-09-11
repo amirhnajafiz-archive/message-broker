@@ -10,9 +10,10 @@ import (
 
 type Client struct {
 	Network network.Network
+	Handler func([]byte)
 }
 
-func NewClient(address string) (*Client, error) {
+func NewClient(address string, handler func([]byte)) (*Client, error) {
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
 		return nil, fmt.Errorf("connection failed: %w", err)
@@ -21,12 +22,13 @@ func NewClient(address string) (*Client, error) {
 	var c Client
 
 	c.Network = network.NewNetwork(conn)
+	c.Handler = handler
 
 	return &c, nil
 }
 
 func (c *Client) Start() {
-	go c.listenForGetData()
+	go c.listenForDataToGet()
 }
 
 func (c *Client) Send(data []byte) error {
@@ -37,7 +39,7 @@ func (c *Client) Send(data []byte) error {
 	return nil
 }
 
-func (c *Client) listenForGetData() {
+func (c *Client) listenForDataToGet() {
 	var buffer = make([]byte, 2048)
 
 	for {
@@ -46,6 +48,6 @@ func (c *Client) listenForGetData() {
 			log.Println(err)
 		}
 
-		fmt.Println(string(data))
+		c.Handler(data)
 	}
 }
