@@ -27,6 +27,8 @@ func (b *Broker) AddWorker(h *handler.Handler) {
 
 func (b *Broker) SendData(data []byte) {
 	for _, worker := range b.Handlers {
-		worker.SendChannel <- data
+		if worker.Id != -1 {
+			worker.SendChannel <- data
+		}
 	}
 }

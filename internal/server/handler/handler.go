@@ -24,7 +24,9 @@ func NewHandler(conn net.Conn, channel chan []byte) Handler {
 
 func (h *Handler) Handle() {
 	go h.listenForDataToSend()
-	go h.listenForDataToGet()
+	h.listenForDataToGet()
+
+	h.Id = -1
 }
 
 func (h *Handler) listenForDataToSend() {
