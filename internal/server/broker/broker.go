@@ -14,7 +14,7 @@ type Broker struct {
 	MainChannel      chan []byte
 	TerminateChannel chan int
 	// list of the Handlers
-	Handlers []*handler.Handler
+	handlers []*handler.Handler
 }
 
 // NewBroker generates a new broker.
@@ -42,13 +42,13 @@ func (b *Broker) Start() {
 
 // AddWorker to list.
 func (b *Broker) AddWorker(h *handler.Handler) {
-	b.Handlers = append(b.Handlers, h)
+	b.handlers = append(b.handlers, h)
 }
 
 func (b *Broker) removeWorker(id int) {
-	for index, worker := range b.Handlers {
+	for index, worker := range b.handlers {
 		if worker.Id == id {
-			b.Handlers = append(b.Handlers[:index], b.Handlers[index+1:]...)
+			b.handlers = append(b.handlers[:index], b.handlers[index+1:]...)
 
 			b.logger.Info("worker terminated", zap.Int("id", id))
 
@@ -58,7 +58,7 @@ func (b *Broker) removeWorker(id int) {
 }
 
 func (b *Broker) sendData(data []byte) {
-	for _, worker := range b.Handlers {
+	for _, worker := range b.handlers {
 		worker.SendChannel <- data
 	}
 }

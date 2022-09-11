@@ -20,6 +20,7 @@ func main() {
 
 	// check if the client should publish or not
 	if os.Args[1] == "pub" {
+		c.Disable()
 		_ = c.Send([]byte("Hello from client"))
 	} else {
 		c.Start()

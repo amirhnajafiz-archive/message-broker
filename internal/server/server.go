@@ -24,7 +24,7 @@ func Start(address string) error {
 	id := 1
 	brokerService := broker.NewBroker(loggerInstance)
 
-	// starting broker serivce
+	// starting broker service
 	go brokerService.Start()
 
 	for {

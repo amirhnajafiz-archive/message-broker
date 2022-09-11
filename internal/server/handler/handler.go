@@ -19,7 +19,7 @@ type Handler struct {
 	SendChannel      chan []byte
 	TerminateChannel chan int
 	// network instance
-	Network network.Network
+	network network.Network
 }
 
 // NewHandler creates a new worker.
@@ -35,7 +35,7 @@ func NewHandler(
 		GetChannel:       channel,
 		SendChannel:      make(chan []byte),
 		TerminateChannel: terminateChannel,
-		Network:          network.NewNetwork(conn),
+		network:          network.NewNetwork(conn),
 		logger:           logger,
 	}
 }
@@ -51,7 +51,7 @@ func (h *Handler) listenForDataToSend() {
 	for {
 		message := <-h.SendChannel
 
-		err := h.Network.Send(message)
+		err := h.network.Send(message)
 		if err != nil {
 			h.logger.Error("worker error", zap.Error(err))
 
@@ -66,7 +66,7 @@ func (h *Handler) listenForDataToGet() {
 	var buffer = make([]byte, 2048)
 
 	for {
-		data, err := h.Network.Get(buffer)
+		data, err := h.network.Get(buffer)
 
 		if err != nil {
 			h.logger.Error("worker error", zap.Error(err))
