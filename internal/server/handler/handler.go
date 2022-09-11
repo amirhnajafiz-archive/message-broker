@@ -35,9 +35,7 @@ func (h *Handler) listenForDataToSend() {
 
 		err := h.Network.Send(message)
 		if err != nil {
-			log.Println(err)
-
-			h.TerminateChannel <- h.Id
+			h.terminate()
 
 			break
 		}
@@ -51,13 +49,17 @@ func (h *Handler) listenForDataToGet() {
 		data, err := h.Network.Get(buffer)
 
 		if err != nil {
-			log.Println(err)
-
-			h.TerminateChannel <- h.Id
+			h.terminate()
 
 			break
 		}
 
 		h.GetChannel <- data
 	}
+}
+
+func (h *Handler) terminate() {
+	h.TerminateChannel <- h.Id
+
+	log.Printf("worker termiated: %d\n", h.Id)
 }
