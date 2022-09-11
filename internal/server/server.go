@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/highway-to-victory/udemy-broker/internal/server/broker"
 	"github.com/highway-to-victory/udemy-broker/internal/server/handler"
 )
 
@@ -13,6 +14,11 @@ func Start(address string) error {
 		return fmt.Errorf("failed to start server: %w", err)
 	}
 
+	id := 1
+	brokerService := broker.NewBroker()
+
+	go brokerService.Start()
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -21,7 +27,12 @@ func Start(address string) error {
 
 		fmt.Println("accept client")
 
-		h := handler.NewHandler(conn)
+		h := handler.NewHandler(conn, brokerService.MainChannel)
+		h.Id = id
+
+		id++
+
+		brokerService.AddWorker(&h)
 
 		go h.Handle()
 	}
