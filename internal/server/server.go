@@ -27,13 +27,13 @@ func Start(address string) error {
 
 		fmt.Println("accept client")
 
-		h := handler.NewHandler(conn, brokerService.MainChannel)
+		h := handler.NewHandler(conn, brokerService.MainChannel, brokerService.TerminateChannel)
 		h.Id = id
 
 		id++
 
 		brokerService.AddWorker(&h)
 
-		go h.Handle()
+		h.Handle()
 	}
 }

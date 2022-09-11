@@ -8,25 +8,25 @@ import (
 )
 
 type Handler struct {
-	Id          int
-	GetChannel  chan []byte
-	SendChannel chan []byte
-	Network     network.Network
+	Id               int
+	GetChannel       chan []byte
+	SendChannel      chan []byte
+	TerminateChannel chan int
+	Network          network.Network
 }
 
-func NewHandler(conn net.Conn, channel chan []byte) Handler {
+func NewHandler(conn net.Conn, channel chan []byte, terminateChannel chan int) Handler {
 	return Handler{
-		GetChannel:  channel,
-		SendChannel: make(chan []byte),
-		Network:     network.NewNetwork(conn),
+		GetChannel:       channel,
+		SendChannel:      make(chan []byte),
+		TerminateChannel: terminateChannel,
+		Network:          network.NewNetwork(conn),
 	}
 }
 
 func (h *Handler) Handle() {
 	go h.listenForDataToSend()
-	h.listenForDataToGet()
-
-	h.Id = -1
+	go h.listenForDataToGet()
 }
 
 func (h *Handler) listenForDataToSend() {
@@ -36,6 +36,8 @@ func (h *Handler) listenForDataToSend() {
 		err := h.Network.Send(message)
 		if err != nil {
 			log.Println(err)
+
+			h.TerminateChannel <- h.Id
 
 			break
 		}
@@ -51,7 +53,9 @@ func (h *Handler) listenForDataToGet() {
 		if err != nil {
 			log.Println(err)
 
-			continue
+			h.TerminateChannel <- h.Id
+
+			break
 		}
 
 		h.GetChannel <- data
