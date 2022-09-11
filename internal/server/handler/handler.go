@@ -7,18 +7,22 @@ import (
 	"go.uber.org/zap"
 )
 
+// Handler manages to keep the client connected
+// to broker service.
 type Handler struct {
+	// worker id
 	Id int
-
+	// logger instance
 	logger *zap.Logger
-
+	// communication channels
 	GetChannel       chan []byte
 	SendChannel      chan []byte
 	TerminateChannel chan int
-
+	// network instance
 	Network network.Network
 }
 
+// NewHandler creates a new worker.
 func NewHandler(
 	id int,
 	conn net.Conn,
@@ -36,6 +40,8 @@ func NewHandler(
 	}
 }
 
+// Handle
+// starts handling the client.
 func (h *Handler) Handle() {
 	go h.listenForDataToSend()
 	go h.listenForDataToGet()

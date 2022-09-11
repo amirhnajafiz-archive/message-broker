@@ -5,15 +5,19 @@ import (
 	"go.uber.org/zap"
 )
 
+// Broker
+// is the main broker service.
 type Broker struct {
+	// logger instance
 	logger *zap.Logger
-
+	// communication channels
 	MainChannel      chan []byte
 	TerminateChannel chan int
-
+	// list of the Handlers
 	Handlers []*handler.Handler
 }
 
+// NewBroker generates a new broker.
 func NewBroker(logger *zap.Logger) Broker {
 	return Broker{
 		logger:           logger,
@@ -22,17 +26,21 @@ func NewBroker(logger *zap.Logger) Broker {
 	}
 }
 
+// Start broker service.
 func (b *Broker) Start() {
 	for {
 		select {
 		case data := <-b.MainChannel:
+			// sending data
 			b.sendData(data)
 		case id := <-b.TerminateChannel:
+			// removing worker
 			b.removeWorker(id)
 		}
 	}
 }
 
+// AddWorker to list.
 func (b *Broker) AddWorker(h *handler.Handler) {
 	b.Handlers = append(b.Handlers, h)
 }
